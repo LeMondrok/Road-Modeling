@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+ <head>
+  <title>Roads modelling</title>
+  <meta charset="utf-8">
+  <script src="scripts/main.js"></script>
+ </head>
+
+ <body>
+ <script>let global_env = 0;</script>
+ <script>
+  function readFile(object) {
+  var file = object.files[0];
+  var reader = new FileReader();
+  reader.onload = function() {
+   global_env = reader.result
+  }
+
+  reader.readAsText(file);
+
+  console.log(reader);
+ }
+ </script>
+
+ <input type="file" id="file">
+ <button onclick="readFile(document.getElementById('file'))">Read!</button>
+ <div id="out"></div>
+
+  <canvas id="app_canvas" width="600" height="600">
+    <p>Ваш браузер не поддерживает рисование.</p>
+  </canvas>
+ </body>
+</html>
