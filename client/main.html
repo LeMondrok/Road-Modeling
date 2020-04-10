@@ -1,33 +1,33 @@
 <!DOCTYPE html>
-<html>
+<html lang="en-us">
  <head>
   <title>Roads modelling</title>
+  <link rel="stylesheet" href="style.css">
   <meta charset="utf-8">
-  <script src="scripts/main.js"></script>
  </head>
 
  <body>
  <script>let global_env = 0;</script>
  <script>
   function readFile(object) {
-  var file = object.files[0];
-  var reader = new FileReader();
+  let file = object.files[0];
+  let reader = new FileReader();
   reader.onload = function() {
    global_env = reader.result
-  }
+  };
 
   reader.readAsText(file);
-
-  console.log(reader);
  }
  </script>
 
  <input type="file" id="file">
- <button onclick="readFile(document.getElementById('file'))">Read!</button>
- <div id="out"></div>
+ <!--<button onclick="readFile(document.getElementById('file'))">Read!</button>-->
 
-  <canvas id="app_canvas" width="600" height="600">
-    <p>Ваш браузер не поддерживает рисование.</p>
-  </canvas>
+ <canvas id="app_canvas" width="800" height="600" class="canvas"> <p>Ваш браузер не поддерживает рисование.</p> </canvas>
+ <script src="scripts/animation.js"></script>
+ <script src="scripts/car.js"></script>
+ <script src="scripts/input.js"></script>
+ <script src="scripts/button.js"></script>
+ <script src="scripts/main.js"></script>
  </body>
 </html>
