@@ -3,7 +3,6 @@
 import EmulationInstance from './scene.js'
 import {construct_buttons} from './buttons.js'
 import {MoveCamera} from './control.js'
-import {closest_road} from './add_panel.js'
 
 let canvas_size = [1000, 600];
 let button_area = 0.725;

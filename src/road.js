@@ -16,7 +16,7 @@ export class Road extends RoadObject {
 		this.length = dist(scene, this.from_road.position, this.to_road.position);
 		this.lanes = lanes;
 		this.speed_limit = speed_limit;
-		this.lanes = lanes;
+		this.orth_vec;
 		if (uid == -1)
 			this.uid = ++scene.max_uid;
 		else
@@ -41,31 +41,31 @@ export class Road extends RoadObject {
 		vec[1] -= screen_coord2[1];
 
 		// Get orthogonal vector and make roads wide
-		let orth_vec = orth_vector(scene, vec);
+		this.orth_vec = orth_vector(scene, vec);
 
 		// Scale coefficient
 		let multiplier = this.lanes * scene.scale * general_wideness / 2;
 
-		orth_vec[0] *= multiplier;
-		orth_vec[1] *= multiplier;
+		this.orth_vec[0] *= multiplier;
+		this.orth_vec[1] *= multiplier;
 
 		// Draw contour
 		scene.p5.fill('white');
 		scene.p5.stroke('white');
 		scene.p5.beginShape();
-		scene.p5.vertex(screen_coord1[0] + orth_vec[0], screen_coord1[1] + orth_vec[1]);
-		scene.p5.vertex(screen_coord1[0] - orth_vec[0], screen_coord1[1] - orth_vec[1]);
-		scene.p5.vertex(screen_coord2[0] - orth_vec[0], screen_coord2[1] - orth_vec[1]);
-		scene.p5.vertex(screen_coord2[0] + orth_vec[0], screen_coord2[1] + orth_vec[1]);
+		scene.p5.vertex(screen_coord1[0] + this.orth_vec[0], screen_coord1[1] + this.orth_vec[1]);
+		scene.p5.vertex(screen_coord1[0] - this.orth_vec[0], screen_coord1[1] - this.orth_vec[1]);
+		scene.p5.vertex(screen_coord2[0] - this.orth_vec[0], screen_coord2[1] - this.orth_vec[1]);
+		scene.p5.vertex(screen_coord2[0] + this.orth_vec[0], screen_coord2[1] + this.orth_vec[1]);
 		scene.p5.endShape(scene.p5.CLOSE);
 
 		// Draw dividing lines
-		let diff = [2 * orth_vec[0] / (this.lanes), 2 * orth_vec[1] / (this.lanes)];
+		let diff = [2 * this.orth_vec[0] / (this.lanes), 2 * this.orth_vec[1] / (this.lanes)];
 		let coords = [
-			screen_coord1[0] + orth_vec[0],
-			screen_coord1[1] + orth_vec[1],
-			screen_coord2[0] + orth_vec[0],
-			screen_coord2[1] + orth_vec[1]
+			screen_coord1[0] + this.orth_vec[0],
+			screen_coord1[1] + this.orth_vec[1],
+			screen_coord2[0] + this.orth_vec[0],
+			screen_coord2[1] + this.orth_vec[1]
 		];
 		scene.p5.stroke('black');
 		for (let ind = 0; ind < this.lanes; ++ind) {
@@ -84,10 +84,10 @@ export class Road extends RoadObject {
 
 		// Draw last line precisely
 		scene.p5.line(
-			screen_coord1[0] - orth_vec[0],
-			screen_coord1[1] - orth_vec[1],
-			screen_coord2[0] - orth_vec[0],
-			screen_coord2[1] - orth_vec[1]
+			screen_coord1[0] - this.orth_vec[0],
+			screen_coord1[1] - this.orth_vec[1],
+			screen_coord2[0] - this.orth_vec[0],
+			screen_coord2[1] - this.orth_vec[1]
 		);
 	}
 

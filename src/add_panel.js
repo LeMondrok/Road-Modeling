@@ -8,6 +8,7 @@ export class AdditionState {
         this.mode = 0;
         this.offset = 5;
         this.last_state = this.scene.addition_mode;
+        this.text = [];
 
         this.button_arr = [];
 
@@ -139,7 +140,7 @@ export class AdditionState {
 
         if (this.road_params['from'] != null) {
             let coords = this.scene.GetScreenCoords(this.road_params['from'].position[0], this.road_params['from'].position[1]);
-            this.scene.p5.fill('blue');
+            this.scene.p5.fill('red');
             this.scene.p5.circle(
                 coords[0], coords[1], 10
             );
@@ -147,11 +148,28 @@ export class AdditionState {
 
         if (this.road_params['to'] != null) {
             let coords = this.scene.GetScreenCoords(this.road_params['to'].position[0], this.road_params['to'].position[1]);
-            this.scene.p5.fill('purple');
+            this.scene.p5.fill('blue');
             this.scene.p5.circle(
                 coords[0], coords[1], 10
             );
         }
+
+        this.scene.p5.textSize(16);
+        this.scene.p5.textFont("Bodoni");
+        this.scene.p5.strokeWeight(0);
+
+        this.text.forEach(
+            (item, index) => {
+                this.scene.p5.textAlign(this.scene.p5.CENTER, this.scene.p5.CENTER);
+                this.scene.p5.fill(item[2]);
+                if (index == 0) {
+                    item[0] = 'lanes:' + this.button_arr[5].value();
+                }
+                this.scene.p5.text(item[0], item[1][0], item[1][1], item[1][2], item[1][3]);
+            }
+        );
+
+        this.scene.p5.strokeWeight(1);
     }
 
     ChangeMode(mode) {
@@ -230,7 +248,6 @@ export class AdditionState {
 
     CreateRoad() {
         if (this.road_params['from'] != null && this.road_params['to'] != null) {
-            console.log(this.road_params['lanes']);
             let road = new Road(
                 this.scene,
                 this.road_params['from'].uid,
@@ -293,6 +310,8 @@ export class AdditionState {
     }
 
     AddMode2Buttons() {
+        this.text = [];
+
         let y_offset = this.scene.canvas_size[1] * this.scene.add_area;
         let y_step = this.scene.canvas_size[1] * (1 - this.scene.add_area) / 3;
 
@@ -315,6 +334,12 @@ export class AdditionState {
         slider.position(offset * 5, y_offset + 2 * y_step);
         slider.size(offset);
         this.button_arr.push(slider);
+
+        this.text.push([
+            'lanes',
+            [offset * 5, y_offset + 2 * y_step + 10, offset, 30],
+            'black'
+        ]);
 
         let button3 = this.scene.p5.createButton('create road');
         button3.position(offset * 7, y_offset + 2 * y_step);

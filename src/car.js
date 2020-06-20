@@ -12,6 +12,8 @@ class Car extends RoadObject {
 		this.type = type;
 		this.momental_speed = 0.1;
 		this.location = 0;
+		// //////
+		this.lane = 1;
 		if (uid == -1)
 			this.uid = ++scene.max_uid;
 		else
@@ -23,7 +25,13 @@ class Car extends RoadObject {
 	Draw(scene) {
 		let road = scene.map['roads'][this.current_road];
 
-		let center = [road.from_coords[0], road.from_coords[1]]
+		let center = [road.from_road.position[0], road.from_road.position[1]];
+		// set the lane
+		console.log(road);
+		center[0] += road.orth_vec[0] * (1 - 2 * (this.lane - 0.5) / road.lanes);
+		center[1] += road.orth_vec[1] * (1 - 2 * (this.lane - 0.5) / road.lanes);
+
+		// move on the road
 		center[0] += (this.location / road.length) * (road.to_road.position[0] - road.from_road.position[0]);
 		center[1] += (this.location / road.length) * (road.to_road.position[1] - road.from_road.position[1]);
 
