@@ -1,6 +1,7 @@
 'use strict'
 
 import {Crossroad, Road} from './road.js'
+import CarGen from './car_generators.js'
 
 export class AdditionState {
     constructor(scene) {
@@ -26,8 +27,13 @@ export class AdditionState {
             'choose_to': false,
         };
 
-        this.car_gen_params = {
-
+        this.cargen_params = {
+            'from': null,
+            'to': null,
+            'type': null,
+            'timer': null,
+            'choose_from': false,
+            'choose_to': false,
         };
     }
 
@@ -37,9 +43,12 @@ export class AdditionState {
                 this.UpdateAddCrossroad();
             if (this.mode == 2)
                 this.UpdateAddRoad();
+            if (this.mode == 3)
+                this.UpdateAddGen();
         } else if (this.last_state) {
             this.button_arr.forEach((elem) => {elem.remove();});
             this.button_arr = [];
+            this.mode = 0;
         }
 
         this.last_state = this.scene.addition_mode;
@@ -80,6 +89,26 @@ export class AdditionState {
         }
     }
 
+    UpdateAddGen() {
+        if (this.cargen_params['choose_from'] == true &&
+            this.scene.p5.mouseIsPressed &&
+            this.scene.p5.mouseY < this.scene.button_area * this.scene.canvas_size[1]) {
+            let mouse_cord = this.scene.GetMapCoords(this.scene.p5.mouseX, this.scene.p5.mouseY);
+            let closest = closest_road(this.scene, mouse_cord);
+
+            this.cargen_params['from'] = closest[0];
+        }
+
+        if (this.cargen_params['choose_to'] == true &&
+            this.scene.p5.mouseIsPressed &&
+            this.scene.p5.mouseY < this.scene.button_area * this.scene.canvas_size[1]) {
+            let mouse_cord = this.scene.GetMapCoords(this.scene.p5.mouseX, this.scene.p5.mouseY);
+            let closest = closest_crossroad(this.scene, mouse_cord);
+
+            this.cargen_params['to'] = closest[0];
+        }
+    }
+
     Draw() {
         this.scene.p5.fill(this.scene.p5.color(255, 204, 0));
         this.scene.p5.rect(
@@ -95,6 +124,9 @@ export class AdditionState {
 
         if (this.mode == 2)
             this.DrawAddRoad();
+
+        if (this.mode == 3)
+            this.DrawAddGen();
     }
 
     DrawAddCrossroad() {
@@ -135,7 +167,6 @@ export class AdditionState {
             this.scene.p5.circle(
                 coords[0], coords[1], 10
             );
-
         }
 
         if (this.road_params['from'] != null) {
@@ -172,6 +203,67 @@ export class AdditionState {
         this.scene.p5.strokeWeight(1);
     }
 
+    DrawAddGen() {
+        if (this.cargen_params['choose_to'] == true) {
+            let mouse_cord = this.scene.GetMapCoords(this.scene.p5.mouseX, this.scene.p5.mouseY);
+            let closest = closest_crossroad(this.scene, mouse_cord)[0].position;
+
+            let coords = this.scene.GetScreenCoords(closest[0], closest[1]);
+            this.scene.p5.fill('orange');
+            this.scene.p5.circle(
+                coords[0], coords[1], 10
+            );
+        }
+
+        if (this.cargen_params['choose_from'] == true) {
+            let mouse_cord = this.scene.GetMapCoords(this.scene.p5.mouseX, this.scene.p5.mouseY);
+            let closest = closest_road(this.scene, mouse_cord);
+            let coords = closest[2];
+
+            coords = this.scene.GetScreenCoords(coords[0], coords[1]);
+            this.scene.p5.fill('orange');
+            this.scene.p5.circle(
+                coords[0], coords[1], 10
+            );
+        }
+
+        if (this.cargen_params['from'] != null) {
+            let cross = this.scene.map['crossroads'][this.cargen_params['from'].from];
+            let coords = this.scene.GetScreenCoords(cross.position[0], cross.position[1]);
+            this.scene.p5.fill('red');
+            this.scene.p5.circle(
+                coords[0], coords[1], 10
+            );
+        }
+
+        if (this.cargen_params['to'] != null) {
+            let coords = this.scene.GetScreenCoords(this.cargen_params['to'].position[0], this.cargen_params['to'].position[1]);
+            this.scene.p5.fill('blue');
+            this.scene.p5.circle(
+                coords[0], coords[1], 10
+            );
+        }
+
+        this.scene.p5.textSize(16);
+        this.scene.p5.textFont("Bodoni");
+        this.scene.p5.strokeWeight(0);
+
+        this.text.forEach(
+            (item, index) => {
+                this.scene.p5.textAlign(this.scene.p5.CENTER, this.scene.p5.CENTER);
+                this.scene.p5.fill(item[2]);
+                if (index == 0) {
+                    item[0] = 'type: ' + this.button_arr[5].value();
+                } else if (index == 1) {
+                    item[0] = 'delay: ' + this.button_arr[6].value();
+                }
+                this.scene.p5.text(item[0], item[1][0], item[1][1], item[1][2], item[1][3]);
+            }
+        );
+
+        this.scene.p5.strokeWeight(1);
+    }
+
     ChangeMode(mode) {
         if (this.mode == mode)
             return;
@@ -186,9 +278,11 @@ export class AdditionState {
         this.AddChangeModeButtons();
 
         if (mode == 1) {
-            this.crossroad_params['position'] = null;
-            this.crossroad_params['road'] = null;
-            this.crossroad_params['choose_road'] == false;
+            this.crossroad_params = {
+                'position': null,
+                'road': null,
+                'choose_road': false,
+            };
 
             this.AddMode1Buttons();
         } else if (mode == 2) {
@@ -202,7 +296,16 @@ export class AdditionState {
 
             this.AddMode2Buttons();
         } else if (mode == 3) {
+            this.cargen_params = {
+                'from': null,
+                'to': null,
+                'type': null,
+                'timer': null,
+                'choose_from': false,
+                'choose_to': false,
+            };
 
+            this.AddMode3Buttons();
         }
     }
 
@@ -210,14 +313,24 @@ export class AdditionState {
         this.crossroad_params['choose_road'] = true;
     }
 
-    TurnSetFrom() {
+    TurnSetFromRoad() {
         this.road_params['choose_from'] = true;
         this.road_params['choose_to'] = false;
     }
 
-    TurnSetTo() {
+    TurnSetToRoad() {
         this.road_params['choose_from'] = false;
         this.road_params['choose_to'] = true;
+    }
+
+    TurnSetFromCargen() {
+        this.cargen_params['choose_from'] = true;
+        this.cargen_params['choose_to'] = false;
+    }
+
+    TurnSetToCargen() {
+        this.cargen_params['choose_from'] = false;
+        this.cargen_params['choose_to'] = true;
     }
 
     CreateCrossroad() {
@@ -263,6 +376,26 @@ export class AdditionState {
                 'choose_to': false
             };
         }
+    }
+
+    CreateCargen() {
+        if (this.cargen_params['from'] != null && this.cargen_params['to'] != null) {
+            let cargen = new CarGen(
+                this.scene,
+                this.cargen_params['from'].uid,
+                this.cargen_params['to'].uid,
+                this.button_arr[5].value(), 
+                this.button_arr[6].value() * 1000
+            );
+
+            this.cargen_params = {
+                'from': null,
+                'to': null,
+                'type': null,
+                'timer': null,
+                'choose_from': false,
+                'choose_to': false,
+            };        }
     }
 
     AddChangeModeButtons() {
@@ -319,14 +452,14 @@ export class AdditionState {
         let offset = this.scene.canvas_size[0] * this.scene.button_area / 9;
         button1.position(offset, y_offset + 2 * y_step);
         button1.size(offset);
-        button1.mousePressed(() => {this.TurnSetFrom()});
+        button1.mousePressed(() => {this.TurnSetFromRoad()});
 
         this.button_arr.push(button1);
 
         let button2 = this.scene.p5.createButton('set to');
         button2.position(offset * 3, y_offset + 2 * y_step);
         button2.size(offset);
-        button2.mousePressed(() => {this.TurnSetTo()});
+        button2.mousePressed(() => {this.TurnSetToRoad()});
 
         this.button_arr.push(button2);
 
@@ -345,6 +478,57 @@ export class AdditionState {
         button3.position(offset * 7, y_offset + 2 * y_step);
         button3.size(offset);
         button3.mousePressed(() => {this.CreateRoad()});
+
+        this.button_arr.push(button3);
+    }
+
+    AddMode3Buttons() {
+        this.text = [];
+
+        let y_offset = this.scene.canvas_size[1] * this.scene.add_area;
+        let y_step = this.scene.canvas_size[1] * (1 - this.scene.add_area) / 3;
+
+        let button1 = this.scene.p5.createButton('set from');
+        let offset = this.scene.canvas_size[0] * this.scene.button_area / 11;
+        button1.position(offset, y_offset + 2 * y_step);
+        button1.size(offset);
+        button1.mousePressed(() => {this.TurnSetFromCargen()});
+
+        this.button_arr.push(button1);
+
+        let button2 = this.scene.p5.createButton('set to');
+        button2.position(offset * 3, y_offset + 2 * y_step);
+        button2.size(offset);
+        button2.mousePressed(() => {this.TurnSetToCargen()});
+
+        this.button_arr.push(button2);
+
+        let slider1 = this.scene.p5.createSlider(1, 5, 1, 1);
+        slider1.position(offset * 5, y_offset + 2 * y_step);
+        slider1.size(offset);
+        this.button_arr.push(slider1);
+
+        this.text.push([
+            'type',
+            [offset * 5, y_offset + 2 * y_step + 10, offset, 30],
+            'black'
+        ]);
+
+        let slider2 = this.scene.p5.createSlider(1, 5, 1, 1);
+        slider2.position(offset * 7, y_offset + 2 * y_step);
+        slider2.size(offset);
+        this.button_arr.push(slider2);
+
+        this.text.push([
+            'delay',
+            [offset * 7, y_offset + 2 * y_step + 10, offset, 30],
+            'black'
+        ]);
+
+        let button3 = this.scene.p5.createButton('create cargen');
+        button3.position(offset * 9, y_offset + 2 * y_step);
+        button3.size(offset);
+        button3.mousePressed(() => {this.CreateCargen()});
 
         this.button_arr.push(button3);
     }

@@ -4,7 +4,7 @@ import Car from './car.js'
 import RoadObject from './objects.js'
 
 class CarGen extends RoadObject {
-	constructor(scene, road, target_point, type, delay, uid) {
+	constructor(scene, road, target_point, type, delay, uid=-1) {
 		super(scene);
 
 		this.road = road;

@@ -27,7 +27,6 @@ class Car extends RoadObject {
 
 		let center = [road.from_road.position[0], road.from_road.position[1]];
 		// set the lane
-		console.log(road);
 		center[0] += road.orth_vec[0] * (1 - 2 * (this.lane - 0.5) / road.lanes);
 		center[1] += road.orth_vec[1] * (1 - 2 * (this.lane - 0.5) / road.lanes);
 
@@ -35,11 +34,25 @@ class Car extends RoadObject {
 		center[0] += (this.location / road.length) * (road.to_road.position[0] - road.from_road.position[0]);
 		center[1] += (this.location / road.length) * (road.to_road.position[1] - road.from_road.position[1]);
 
+
 		let coords = scene.GetScreenCoords(center[0], center[1]);
 		let offset = general_wideness * scene.scale;
 
-		scene.p5.fill('red');
-		scene.p5.stroke('red');
+		let color;
+		if (this.type == 1) {
+			color = 'red';
+		} else if (this.type == 2) {
+			color = 'green';
+		} else if (this.type == 3) {
+			color = 'yellow';
+		} else if (this.type == 4) {
+			color = 'pink';
+		} else if (this.type == 5) {
+			color = 'orange';
+		}
+
+		scene.p5.stroke(color);
+		scene.p5.fill(color);
 		// scene.p5.circle(coords[0], coords[1], 20);
 		scene.p5.rect(
 			coords[0] - offset / 2,
