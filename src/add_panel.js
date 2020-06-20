@@ -110,7 +110,7 @@ export class AdditionState {
     }
 
     Draw() {
-        this.scene.p5.fill(this.scene.p5.color(179, 170, 164));
+        this.scene.p5.fill(this.scene.p5.color(204,203,208));
         this.scene.p5.rect(
             0,
             this.scene.canvas_size[1] * this.scene.add_area,

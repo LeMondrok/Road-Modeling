@@ -39,7 +39,7 @@ function DrawObjects(scene) {
 }
 
 function DrawPanel(scene) {
-	scene.p5.fill(scene.p5.color(179, 170, 164));
+	scene.p5.fill(scene.p5.color(204, 203, 208));
     scene.p5.rect(
         scene.canvas_size[0] * scene.button_area,
         0,

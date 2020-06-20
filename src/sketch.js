@@ -19,8 +19,8 @@ const Sketch = (p) => {
 
     // Draw function on every iteration 
     p.draw = () => {
-        // Fill background and button zone
-        p.background(200);
+        // Fill background
+        p.background(227, 226, 224);
 
         // process control
         MoveCamera(scene);
