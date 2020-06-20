@@ -8,7 +8,7 @@ export function DrawAllInstances(scene) {
 	// Draw texts
 	DrawText(scene);
 	// Draw debug state
-	DrawState(scene);
+	// DrawState(scene);
 }
 
 function DrawObjects(scene) {
@@ -39,7 +39,7 @@ function DrawObjects(scene) {
 }
 
 function DrawPanel(scene) {
-	scene.p5.fill(scene.p5.color(255, 204, 0));
+	scene.p5.fill(scene.p5.color(179, 170, 164));
     scene.p5.rect(
         scene.canvas_size[0] * scene.button_area,
         0,

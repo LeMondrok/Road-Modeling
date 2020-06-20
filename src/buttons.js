@@ -4,6 +4,7 @@ let buttons = [];
 
 function start_button(p, scene) {
 	scene.simulation = true;
+	scene.addition_mode = false;
 }
 
 function stop_button(p, scene) {
@@ -90,8 +91,6 @@ export function construct_buttons(p, scene) {
 			button = p.createButton(key[0]);
 			button.position(left_x, key[1] * margin_y);
 			button.size(size_x);
-			button.style("font-family", "Bodoni");
- 	 		button.style("font-size", "16px");
 			button.mousePressed(() => {key[2](p, scene)});
 			scene.buttons[key[0]] = button;
 		}
@@ -117,9 +116,19 @@ export function construct_buttons(p, scene) {
 			input = p.createFileInput( (file) => {key[2](p, scene, file);} );
 			input.position(left_x, key[1] * margin_y);
 			input.size(size_x);
+			input.addClass(key[0]);
 			scene.inputs[key[0]] = input;
 
-			scene.text.push([key[0], [left_x, key[1] * margin_y + 10, size_x, 30], 'black'])
+			scene.text.push([key[0], [left_x, key[1] * margin_y, size_x, 30], 'black'])
+
+			let button = p.createButton('import configuration');
+			button.position(left_x, key[1] * margin_y);
+			button.size(size_x);
+			button.mousePressed(() =>{
+				let inp = document.getElementsByClassName(key[0]);
+				inp[0].click();
+			});
+			scene.buttons[key[0]] = button;
 		}
 	);
 }

@@ -110,7 +110,7 @@ export class AdditionState {
     }
 
     Draw() {
-        this.scene.p5.fill(this.scene.p5.color(255, 204, 0));
+        this.scene.p5.fill(this.scene.p5.color(179, 170, 164));
         this.scene.p5.rect(
             0,
             this.scene.canvas_size[1] * this.scene.add_area,
@@ -401,7 +401,7 @@ export class AdditionState {
     AddChangeModeButtons() {
         let offset = this.scene.canvas_size[0] * this.scene.button_area / 7;
         let y_offset = this.scene.canvas_size[1] * this.scene.add_area;
-        let y_step = this.scene.canvas_size[1] * (1 - this.scene.add_area) / 3;
+        let y_step = this.scene.canvas_size[1] * (1 - this.scene.add_area) / 5;
 
         let button1 = this.scene.p5.createButton('add crossroad');
         button1.position(offset, y_offset + y_step);
@@ -424,7 +424,7 @@ export class AdditionState {
 
     AddMode1Buttons() {
         let y_offset = this.scene.canvas_size[1] * this.scene.add_area;
-        let y_step = this.scene.canvas_size[1] * (1 - this.scene.add_area) / 3;
+        let y_step = this.scene.canvas_size[1] * (1 - this.scene.add_area) / 4;
 
         let button1 = this.scene.p5.createButton('set position');
         let offset = this.scene.canvas_size[0] * this.scene.button_area / 5;
@@ -446,9 +446,9 @@ export class AdditionState {
         this.text = [];
 
         let y_offset = this.scene.canvas_size[1] * this.scene.add_area;
-        let y_step = this.scene.canvas_size[1] * (1 - this.scene.add_area) / 3;
+        let y_step = this.scene.canvas_size[1] * (1 - this.scene.add_area) / 4;
 
-        let button1 = this.scene.p5.createButton('set from');
+        let button1 = this.scene.p5.createButton('starting crossroad');
         let offset = this.scene.canvas_size[0] * this.scene.button_area / 9;
         button1.position(offset, y_offset + 2 * y_step);
         button1.size(offset);
@@ -456,7 +456,7 @@ export class AdditionState {
 
         this.button_arr.push(button1);
 
-        let button2 = this.scene.p5.createButton('set to');
+        let button2 = this.scene.p5.createButton('ending crossroad');
         button2.position(offset * 3, y_offset + 2 * y_step);
         button2.size(offset);
         button2.mousePressed(() => {this.TurnSetToRoad()});
@@ -470,7 +470,7 @@ export class AdditionState {
 
         this.text.push([
             'lanes',
-            [offset * 5, y_offset + 2 * y_step + 10, offset, 30],
+            [offset * 5, y_offset + 2 * y_step + 20, offset, 30],
             'black'
         ]);
 
@@ -486,9 +486,9 @@ export class AdditionState {
         this.text = [];
 
         let y_offset = this.scene.canvas_size[1] * this.scene.add_area;
-        let y_step = this.scene.canvas_size[1] * (1 - this.scene.add_area) / 3;
+        let y_step = this.scene.canvas_size[1] * (1 - this.scene.add_area) / 4;
 
-        let button1 = this.scene.p5.createButton('set from');
+        let button1 = this.scene.p5.createButton('starting road');
         let offset = this.scene.canvas_size[0] * this.scene.button_area / 11;
         button1.position(offset, y_offset + 2 * y_step);
         button1.size(offset);
@@ -496,7 +496,7 @@ export class AdditionState {
 
         this.button_arr.push(button1);
 
-        let button2 = this.scene.p5.createButton('set to');
+        let button2 = this.scene.p5.createButton('ending crossroad');
         button2.position(offset * 3, y_offset + 2 * y_step);
         button2.size(offset);
         button2.mousePressed(() => {this.TurnSetToCargen()});
@@ -510,7 +510,7 @@ export class AdditionState {
 
         this.text.push([
             'type',
-            [offset * 5, y_offset + 2 * y_step + 10, offset, 30],
+            [offset * 5, y_offset + 2 * y_step + 20, offset, 30],
             'black'
         ]);
 
@@ -521,7 +521,7 @@ export class AdditionState {
 
         this.text.push([
             'delay',
-            [offset * 7, y_offset + 2 * y_step + 10, offset, 30],
+            [offset * 7, y_offset + 2 * y_step + 20, offset, 30],
             'black'
         ]);
 
