@@ -17,6 +17,7 @@ export class Road extends RoadObject {
 		this.lanes = lanes;
 		this.speed_limit = speed_limit;
 		this.orth_vec;
+		this.cars = {};
 		if (uid == -1)
 			this.uid = ++scene.max_uid;
 		else
@@ -26,6 +27,7 @@ export class Road extends RoadObject {
 
 		scene.map['crossroads'][from].connected_roads.push(this.uid);
 		scene.map['crossroads'][to].connected_roads.push(this.uid);
+		scene.map['crossroads'][from].outgoing_roads.push(this.uid);
 		scene.initialized = false;
 	}
 
@@ -109,6 +111,7 @@ export class Crossroad extends RoadObject {
 		super(scene);
 
 		this.position = position;
+		this.outgoing_roads = [];
 		this.connected_roads = [];
 		// last amount of checked roads to determine the size of the crossroad 
 		this.last_checked_size = 0;

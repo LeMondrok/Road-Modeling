@@ -46,13 +46,13 @@ function configure_generators(scene) {
 	scene.input['car_gens'].forEach(
 		(key, index) => {
 			let gen = new CarGen(scene, key[0], key[1], key[2], key[3], key[4]);
-			scene.objects['car_gens'][gen.uid] = gen;
 		}
 	);
 }
 
 export function export_configure(scene) {
 	let conf = {};
+	conf['max_uid'] = scene.max_uid;
 
 	Object.keys(scene.map).forEach(
 		(type) => {

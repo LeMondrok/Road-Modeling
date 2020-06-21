@@ -6,7 +6,7 @@ import {AdditionState} from './add_panel'
 
 class EmulationInstance {
 	constructor(p, canvas_size, button_area, add_area) {
-		this.maxuid = 0;
+		this.max_uid = 0;
 
 		//dicts uid: object
 		this.map = {};
@@ -62,15 +62,18 @@ class EmulationInstance {
 					);
 				}
 			);
-			Object.keys(this.objects).forEach(
-				(type) => {
-					Object.keys(this.objects[type]).forEach(
-						(uid) => {
-							this.objects[type][uid].Update(this);
-						}
-					);
-				}
-			);
+
+			if (this.simulation) {
+				Object.keys(this.objects).forEach(
+					(type) => {
+						Object.keys(this.objects[type]).forEach(
+							(uid) => {
+								this.objects[type][uid].Update(this);
+							}
+						);
+					}
+				);
+			}
 		}
 
 		this.scale = this.sliders['scale'].value();

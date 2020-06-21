@@ -59,7 +59,7 @@ export class AdditionState {
             let mouse_cord = this.scene.GetMapCoords(this.scene.p5.mouseX, this.scene.p5.mouseY);
             let closest = closest_road(this.scene, mouse_cord);
 
-            if (closest[1] > this.offset) {
+            if (closest[1] == null || closest[1] > this.offset) {
                 this.crossroad_params['position'] = mouse_cord;
                 this.crossroad_params['road'] = null;
             } else {
@@ -110,7 +110,7 @@ export class AdditionState {
     }
 
     Draw() {
-        this.scene.p5.fill(this.scene.p5.color(204,203,208));
+        this.scene.p5.fill(this.scene.p5.color(204, 203, 208));
         this.scene.p5.rect(
             0,
             this.scene.canvas_size[1] * this.scene.add_area,
@@ -135,7 +135,7 @@ export class AdditionState {
             let closest = closest_road(this.scene, mouse_cord);
             let coords;
 
-            if (closest[1] > this.offset) {
+            if (closest[1] == null || closest[1] > this.offset) {
                 coords = mouse_cord;
             } else {
                 coords = closest[2];
@@ -379,11 +379,15 @@ export class AdditionState {
     }
 
     CreateCargen() {
-        if (this.cargen_params['from'] != null && this.cargen_params['to'] != null) {
+        if (this.cargen_params['from'] != null) {
+            let endpoint = null;
+            if (this.cargen_params['to'] != null)
+                endpoint = this.cargen_params['to'].uid;
+
             let cargen = new CarGen(
                 this.scene,
                 this.cargen_params['from'].uid,
-                this.cargen_params['to'].uid,
+                endpoint,
                 this.button_arr[5].value(), 
                 this.button_arr[6].value() * 1000
             );
