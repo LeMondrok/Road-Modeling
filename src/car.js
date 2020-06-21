@@ -14,8 +14,8 @@ class Car extends RoadObject {
 		this.momental_speed = 0;
 		this.speed_modifyer = 0.004;
 		this.location = 0;
-		this.lane = 1;
-		this.target_lane = 1;
+		this.lane = scene.p5.ceil(scene.map['roads'][current_road].lanes / 2);
+		this.target_lane = this.lane;
 		if (uid == -1)
 			this.uid = ++scene.max_uid;
 		else
@@ -23,6 +23,8 @@ class Car extends RoadObject {
 
 		scene.map['roads'][current_road].cars[this.uid] = true;
 		scene.objects['cars'][this.uid] = this;
+
+		this.next_road = next_road(scene, this);
 	};
 
 	Draw(scene) {
@@ -77,18 +79,6 @@ class Car extends RoadObject {
 			this.lane += 0.005 * scene.p5.deltaTime;
 		}
 
-		if (this.next_road == null) {
-			let road = scene.map['roads'][this.current_road];
-			this.next_road = null;
-
-			if (road.to != this.target_point && road.to_road.connected_roads.length != 0) {
-				for (let ind = 0; ind < road.to_road.outgoing_roads.length; ++ind) {
-					if (is_richable(scene, road.to_road.outgoing_roads[ind], this.target_point))
-						this.next_road = road.to_road.outgoing_roads[ind];
-				}
-			}
-		}
-
 		this.location += this.momental_speed * this.speed_modifyer * scene.p5.deltaTime * scene.speed;
 		if (this.location < 0)
 			this.location = 0;
@@ -103,18 +93,9 @@ class Car extends RoadObject {
 				scene.map['roads'][this.current_road].cars[this.uid] = true;
 
 				this.location = 0;
-				this.lane = 1;
-				this.target_lane = 1;
-
-				let road = scene.map['roads'][this.current_road];
-				this.next_road = null;
-
-				if (road.to != this.target_point && road.to_road.connected_roads.length != 0) {
-					for (let ind = 0; ind < road.to_road.outgoing_roads.length; ++ind) {
-						if (is_richable(scene, road.to_road.outgoing_roads[ind], this.target_point))
-							this.next_road = road.to_road.outgoing_roads[ind];
-					}
-				}
+				this.lane = scene.p5.ceil(scene.map['roads'][this.current_road].lanes / 2);
+				this.target_lane = this.lane;
+				this.next_road = next_road(scene, this);
 			}
 		}
 	}
@@ -176,9 +157,10 @@ function calc(scene, car) {
 			indicator = false;
 		}
 
-		for (let ind = 0; ind < lanes1.length && indicator; ++ind) {
+		for (let ind = scene.p5.max(0, car.target_lane - 2); ind < scene.p5.min(lanes1.length, car.target_lane + 1) && indicator; ++ind) {
 			if (lanes1[ind] == null || lanes1[ind] > cur_restr[2] &&
-				lanes1[car.target_lane - 1] != null && lanes1[car.target_lane - 1] > cur_restr[2] * 2) {
+				lanes1[car.target_lane - 1] != null &&
+				(lanes1[car.target_lane - 1] > cur_restr[2] / 2 || car.momental_speed == 0)) {
 				if (car.momental_speed < cur_restr[0]) {
 					car.momental_speed += scene.p5.deltaTime * cur_restr[1] * 0.005;
 				}
@@ -200,64 +182,95 @@ function calc(scene, car) {
 
 	if (car.momental_speed < 0)
 		car.momental_speed = 0;
+
+	if (car.lane > road1.lanes)
+		car.lane = road1.lanes;
 }
 
 function fill_lanes(scene, lanes, location, road) {
 	Object.keys(road.cars).forEach (
 		(next_car) => {
 			let temp_car = scene.objects['cars'][next_car];
-			let lane1 = scene.p5.floor(temp_car.lane);
-			let lane2 = 0;
 
-			if (lane1 < 1)
-				lane1 = 1;
-
-			if (lane1 - temp_car.lane > 0.9) {
-				lane1++;
-				lane2 = lane1;
-			} else if (lane1 - temp_car.lane < 0.1) {
-				lane2 = lane1;
-			} else {
-				lane2 = lane1 + 1;
-			}
+			let lane = temp_car.target_lane;
 
 			if (temp_car.location - location > 0) {
-				if (lanes[lane1 - 1] == null || temp_car.location - location < lanes[lane1 - 1])
-					lanes[lane1 - 1] = temp_car.location - location;
-				if (lanes[lane2 - 1] == null || temp_car.location - location < lanes[lane2 - 1])
-					lanes[lane2 - 1] = temp_car.location - location;
+				if (lanes[lane - 1] == null || temp_car.location - location < lanes[lane - 1])
+					lanes[lane - 1] = temp_car.location - location;
 			}
 		}
 	);
 }
 
-let visited = {};
 
-function is_richable(scene, from_road_id, to_cross_id, first=true) {
-	if (to_cross_id == null) {
-		return true;
+function next_road(scene, car) {
+	let road = scene.map['roads'][car.current_road];
+	if (car.target_point == null) {
+		if (road.to_road.outgoing_roads.length == 0)
+			return null;
+
+
+		return road.to_road.outgoing_roads[
+			scene.p5.floor(scene.p5.random(1, road.to_road.outgoing_roads.length + 1) - 1)
+		];
 	}
 
-	if (first) {
-		visited = {};
-	}
+	if (car.target_point == road.to)
+		return null;
 
-	let road = scene.map['roads'][from_road_id];
-	if (road.to == to_cross_id) {
-		return true;
-	} else {
-		for (let ind = 0; ind < road.to_road.outgoing_roads.length; ++ind) {
-			if (visited[road.to_road.outgoing_roads[ind]] != true) {
-				visited[road.to_road.outgoing_roads[ind]] = true;
+	let MAX_LEN = 500 * (scene.max_uid + 2);
+	let visited = {};
+	let distances = {};
+	let from = {};
 
-				if (is_richable(scene, road.to_road.outgoing_roads[ind], to_cross_id, false))
-					return true;
+	distances[road.to] = 0;
+
+	while (true) {
+		let minimal = MAX_LEN;
+		let cross_id = -1;
+
+		Object.keys(distances).forEach(
+			(crossroad_id) => {
+				if (visited[crossroad_id] != true && distances[crossroad_id] < minimal){
+					minimal = distances[crossroad_id];
+					cross_id = crossroad_id;
+				}
 			}
-				
-		}
-	}
+		);
 
-	return false;
+		if (cross_id == -1) {
+			first = false;
+			return null;
+		} else if (cross_id == car.target_point) {
+			let cur_cross = from[cross_id];
+			if (road.to == cur_cross[0])
+				return cur_cross[1];
+
+			while (road.to != from[cur_cross[0]][0])
+				cur_cross = from[cur_cross[0]];
+
+			return from[cur_cross[0]][1];
+		}
+
+		visited[cross_id] = true;
+		scene.map['crossroads'][cross_id].outgoing_roads.forEach(
+			(road_id, index) => {
+				let road_temp = scene.map['roads'][road_id];
+				if (visited[road_temp.to] != true) {
+					if (distances[road_temp.to] != undefined) {
+						if (distances[road_temp.to] < road_temp.length) {
+							distances[road_temp.to] = road_temp.length;
+							from[road_temp.to] = [cross_id, road_id];
+						}
+					} else {
+						distances[road_temp.to] = road_temp.length;
+						from[road_temp.to] = [cross_id, road_id];
+					}
+				}
+			}
+		);
+
+	}
 }
 
 export default Car;
