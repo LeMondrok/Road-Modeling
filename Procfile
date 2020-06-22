@@ -1,2 +1,1 @@
-web: node deploy.js
-
+web: node --max_old_space_size=2560 deploy.js
