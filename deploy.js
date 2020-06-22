@@ -7,5 +7,5 @@ let app = express();
 app.get("/kekw", (req, resp) => {resp.send("meme")})
 
 app.use(bundler.middleware());
-app.listen(5000);
+app.listen(process.env.PORT);
 
