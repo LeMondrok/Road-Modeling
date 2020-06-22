@@ -40,14 +40,6 @@ class EmulationInstance {
         this.initialized = false;
 
         this.add_state = new AdditionState(this);
-
-        var x = new XMLHttpRequest();
-		x.open("GET", "/kekw", true);
-		x.onload = function (){
-		    alert( x.responseText);
-		}
-		x.send(null);
-
 	}
 
 	// Update states of all objects on the scene on every iteration
