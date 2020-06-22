@@ -1,16 +1,10 @@
 {
-  "dependencies": {
-    "p5": "^1.0.0",
-    "express": "^4.17.1",
-    "parcel-bundler": "^1.12.4"
-  },
-  "name": "road_modeling",
+  "name": "road-modeling",
   "version": "1.0.0",
+  "description": "",
   "main": "deploy.js",
-  "devDependencies": {},
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node deploy.js"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
@@ -22,5 +16,9 @@
     "url": "https://github.com/LeMondrok/Road-Modeling/issues"
   },
   "homepage": "https://github.com/LeMondrok/Road-Modeling#readme",
-  "description": ""
+  "dependencies": {
+    "express": "^4.17.1",
+    "p5": "^1.0.0",
+    "parcel-bundler": "^1.12.4"
+  }
 }
